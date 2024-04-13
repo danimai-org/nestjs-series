@@ -3,8 +3,12 @@ import { ConfigModule } from '@nestjs/config';
 import { configLoads } from '../config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeORMConfigFactory } from '../database/typeorm.factory';
+import { AuthModule } from '../auth/auth.module';
+import { UserModule } from '../user/user.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { MailerConfigClass } from '../mail/mailerConfig.service';
 
-const modules = [];
+const modules = [AuthModule, UserModule];
 
 export const global_modules = [
   ConfigModule.forRoot({
@@ -14,6 +18,9 @@ export const global_modules = [
   }),
   TypeOrmModule.forRootAsync({
     useClass: TypeORMConfigFactory,
+  }),
+  MailerModule.forRootAsync({
+    useClass: MailerConfigClass,
   }),
 ];
 

@@ -1,7 +1,15 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+import {
+  AfterLoad,
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  OneToMany,
+} from 'typeorm';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { BaseEntity } from './base';
 import { Token } from './user_token.entity';
+import * as bcrypt from 'bcryptjs';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -32,4 +40,26 @@ export class User extends BaseEntity {
   @ApiHideProperty()
   @OneToMany(() => Token, (token) => token.user)
   tokens: Token[];
+
+  @ApiHideProperty()
+  previousPassword: string;
+
+  @AfterLoad()
+  storePasswordInCache() {
+    this.previousPassword = this.password;
+  }
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async setPassword() {
+    if (this.previousPassword !== this.password && this.password) {
+      const salt = await bcrypt.genSalt();
+      this.password = await bcrypt.hash(this.password, salt);
+    }
+    this.email = this.email.toLowerCase();
+  }
+
+  comparePassword(password: string) {
+    return bcrypt.compareSync(password, this.password);
+  }
 }
