@@ -10,6 +10,7 @@ import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { BaseEntity } from './base';
 import { Token } from './user_token.entity';
 import * as bcrypt from 'bcryptjs';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -27,6 +28,7 @@ export class User extends BaseEntity {
 
   @ApiProperty({ example: 'Password@123' })
   @Column({ type: 'varchar', length: 255, nullable: true })
+  @Exclude()
   password: string;
 
   @ApiHideProperty()
@@ -42,6 +44,7 @@ export class User extends BaseEntity {
   tokens: Token[];
 
   @ApiHideProperty()
+  @Exclude()
   previousPassword: string;
 
   @AfterLoad()

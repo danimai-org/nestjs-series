@@ -1,13 +1,15 @@
 import {
+  ClassSerializerInterceptor,
   INestApplication,
   ValidationPipe,
   VersioningType,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { SerializerInterceptor } from './serializer.interceptor';
+import { Reflector } from '@nestjs/core';
 import validationOptions from './validation-options';
 import * as morgan from 'morgan';
+import { SerializerInterceptor } from './serializer.interceptor';
 
 export const documentationBuilder = (
   app: INestApplication,
@@ -29,7 +31,10 @@ export const createApplication = (app: INestApplication) => {
   app.enableVersioning({
     type: VersioningType.URI,
   });
-  app.useGlobalInterceptors(new SerializerInterceptor());
+  app.useGlobalInterceptors(
+    new SerializerInterceptor(),
+    new ClassSerializerInterceptor(app.get(Reflector)),
+  );
   app.useGlobalPipes(new ValidationPipe(validationOptions));
 
   app.use(morgan('dev'));

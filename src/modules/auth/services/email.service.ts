@@ -10,8 +10,8 @@ import {
   ResetPasswordDto,
   SendVerifyMailDto,
 } from '../email.dto';
-import { UserService } from '../../user/services/user.service';
-import { TokenService } from '../../user/services/token.service';
+import { UserService } from '../../user/user.service';
+import { TokenService } from '../../token/token.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
