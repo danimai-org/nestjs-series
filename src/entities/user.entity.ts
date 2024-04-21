@@ -4,6 +4,8 @@ import {
   BeforeUpdate,
   Column,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
 } from 'typeorm';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
@@ -11,6 +13,7 @@ import { BaseEntity } from './base';
 import { Token } from './user_token.entity';
 import * as bcrypt from 'bcryptjs';
 import { Exclude } from 'class-transformer';
+import { Media } from './media.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -46,6 +49,15 @@ export class User extends BaseEntity {
   @ApiHideProperty()
   @Exclude()
   previousPassword: string;
+
+  @ApiHideProperty()
+  @ManyToOne(() => Media, (media) => media.avatars)
+  @JoinColumn({ name: 'avatar_id' })
+  avatar: Media;
+
+  @ApiHideProperty()
+  @Column({ type: 'uuid', nullable: true })
+  avatar_id: string;
 
   @AfterLoad()
   storePasswordInCache() {
