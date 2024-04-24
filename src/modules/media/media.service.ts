@@ -6,6 +6,7 @@ import { Media } from 'src/entities/media.entity';
 import { MediaServiceContract } from './media.interface';
 import { S3Service } from './s3.service';
 import { LocalService } from './local.service';
+import { Response } from 'express';
 
 @Injectable()
 export class MediaService {
@@ -21,6 +22,12 @@ export class MediaService {
     } else {
       this.serviceHandler = new LocalService(mediaRepository);
     }
+  }
+
+  async get(id: string, res: Response, range: string) {
+    const media = await this.mediaRepository.findOneBy({ id });
+
+    await this.serviceHandler.get(media, res, range);
   }
 
   async create(file: Express.Multer.File): Promise<Media> {

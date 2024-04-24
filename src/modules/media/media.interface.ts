@@ -1,6 +1,8 @@
+import { Response } from 'express';
 import { Media } from 'src/entities/media.entity';
 
 export interface MediaServiceContract {
+  get: (media: Media, res: Response, range?: string) => Promise<void>;
   create: (file: Express.Multer.File) => Promise<Media>;
   delete: (media: Media) => Promise<void>;
 }

@@ -5,6 +5,7 @@ import { User } from 'src/entities/user.entity';
 import { RegisterDto } from 'src/modules/auth/email.dto';
 import { UserUpdateDto } from './user.dto';
 import { MediaService } from '../media/media.service';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UserService {
@@ -27,13 +28,19 @@ export class UserService {
     const updateData: Record<string, string> = {
       ...updateDto,
     };
-
+    const previousImage = user.avatar_id;
     if (avatar) {
-      updateData.avatar_id = (
-        await this.mediaService.update(avatar, user.avatar_id)
-      ).id;
+      updateData.avatar_id = (await this.mediaService.update(avatar)).id;
     }
 
     await this.userRepository.update(user.id, updateData);
+    if (avatar && updateData.avatar_id !== previousImage) {
+      await this.mediaService.deleteMedia(previousImage);
+    }
+
+    return plainToInstance(User, {
+      ...user,
+      ...updateData,
+    });
   }
 }
