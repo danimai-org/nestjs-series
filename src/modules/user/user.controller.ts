@@ -17,7 +17,7 @@ import {
 } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
-import { UserParam } from '../auth/user.decorator';
+import { UserParam } from '../../decorators/user.decorator';
 import { User } from 'src/entities/user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserUpdateDto } from './user.dto';

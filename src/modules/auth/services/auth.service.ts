@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { MailData } from 'src/modules/mail/mail.interface';
+import { SessionService } from 'src/modules/session/session.service';
 
 @Injectable()
 export class AuthService {
@@ -11,13 +12,49 @@ export class AuthService {
     private jwtService: JwtService,
     private mailerService: MailerService,
     private configService: ConfigService,
+    private sessionService: SessionService,
   ) {}
 
-  createJwtToken(user: User) {
-    return this.jwtService.sign({
-      id: user.id,
-      timestamp: Date.now(),
+  async createJwtToken(user: User) {
+    const refreshTokenExpiresIn = this.configService.get(
+      'auth.refreshTokenExpiresIn',
+    );
+    const accessTokenExpiresIn = this.configService.get(
+      'auth.accessTokenExpiresIn',
+    );
+    const session = await this.sessionService.create(user);
+
+    const payload = {
+      id: session.id,
+    };
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: accessTokenExpiresIn,
     });
+    const refreshToken = this.jwtService.sign(payload, {
+      expiresIn: refreshTokenExpiresIn,
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async createAccessToken(sessionId: string) {
+    const accessTokenExpiresIn = this.configService.get(
+      'auth.accessTokenExpiresIn',
+    );
+
+    const payload = {
+      id: sessionId,
+    };
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: accessTokenExpiresIn,
+    });
+
+    return {
+      accessToken,
+    };
   }
 
   async userRegisterEmail(

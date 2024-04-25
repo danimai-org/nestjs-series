@@ -70,8 +70,7 @@ export class EmailService {
         password: 'Password is incorrect',
       });
     }
-    const auth_token = this.authService.createJwtToken(user);
-    return { auth_token };
+    return this.authService.createJwtToken(user);
   }
 
   async sendVerifyMail(sendVerifyMailDto: SendVerifyMailDto) {

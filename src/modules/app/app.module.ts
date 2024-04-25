@@ -7,7 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { MailerConfigClass } from '../mail/mailerConfig.service';
-import { GoogleAuthModule } from '../google/google.module';
+import { GoogleAuthModule } from '../auth-google/google.module';
 
 const modules = [AuthModule, UserModule, GoogleAuthModule];
 

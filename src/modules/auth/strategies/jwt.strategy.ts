@@ -6,9 +6,7 @@ import {
 } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/entities/user.entity';
-import { Repository } from 'typeorm';
+import { SessionService } from 'src/modules/session/session.service';
 
 export type JwtPayload = {
   id: string;
@@ -20,8 +18,7 @@ export type JwtPayload = {
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     configService: ConfigService,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private sessionService: SessionService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -32,10 +29,13 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
   public async validate(payload: JwtPayload) {
     try {
-      const user = await this.userRepository.findOneByOrFail({
-        id: payload.id,
-      });
+      const session = await this.sessionService.get(payload.id);
 
+      if (!session) {
+        throw new UnauthorizedException('Invalid token provided.');
+      }
+
+      const { user } = session;
       if (!user.email_verified_at) {
         throw new UnauthorizedException('Please verify your email.');
       }
@@ -43,7 +43,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       if (!user.is_active) {
         throw new ForbiddenException('Your account is not active.');
       }
-      return user;
+      return session;
     } catch {
       throw new UnauthorizedException('User is not authorized.');
     }

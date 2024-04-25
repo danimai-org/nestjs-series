@@ -14,6 +14,7 @@ import { Token } from './user_token.entity';
 import * as bcrypt from 'bcryptjs';
 import { Exclude } from 'class-transformer';
 import { Media } from './media.entity';
+import { Session } from './session.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -58,6 +59,10 @@ export class User extends BaseEntity {
   @ApiHideProperty()
   @Column({ type: 'uuid', nullable: true })
   avatar_id: string;
+
+  @ApiHideProperty()
+  @OneToMany(() => Session, (session) => session.user)
+  sessions: Session;
 
   @AfterLoad()
   storePasswordInCache() {

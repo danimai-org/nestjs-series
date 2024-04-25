@@ -15,8 +15,8 @@ import {
   RegisterDto,
   ResetPasswordDto,
   SendVerifyMailDto,
-} from './email.dto';
-import { EmailService } from './services/email.service';
+} from '../email.dto';
+import { EmailService } from '../services/email.service';
 
 @ApiTags('Auth Email')
 @Controller({
