@@ -10,6 +10,7 @@ import { SessionService } from 'src/modules/session/session.service';
 
 export type JwtPayload = {
   id: string;
+  type: 'ACCESS' | 'REFRESH';
   iat: number;
   exp: number;
 };
@@ -29,6 +30,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
   public async validate(payload: JwtPayload) {
     try {
+      if (payload.type !== 'ACCESS') {
+        throw new UnauthorizedException('Invalid token provided.');
+      }
       const session = await this.sessionService.get(payload.id);
 
       if (!session) {

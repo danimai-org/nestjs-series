@@ -15,6 +15,8 @@ import * as bcrypt from 'bcryptjs';
 import { Exclude } from 'class-transformer';
 import { Media } from './media.entity';
 import { Session } from './session.entity';
+import { Post } from './post.entity';
+import { AuthProvider } from 'src/modules/auth/auth.provider';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -44,6 +46,10 @@ export class User extends BaseEntity {
   is_active: boolean;
 
   @ApiHideProperty()
+  @Column({ default: AuthProvider.EMAIL, enum: AuthProvider })
+  provider: AuthProvider;
+
+  @ApiHideProperty()
   @OneToMany(() => Token, (token) => token.user)
   tokens: Token[];
 
@@ -62,7 +68,11 @@ export class User extends BaseEntity {
 
   @ApiHideProperty()
   @OneToMany(() => Session, (session) => session.user)
-  sessions: Session;
+  sessions: Session[];
+
+  @ApiHideProperty()
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
 
   @AfterLoad()
   storePasswordInCache() {

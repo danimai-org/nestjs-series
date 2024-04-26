@@ -16,6 +16,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { AuthService } from './auth.service';
+import { AuthProvider } from '../auth.provider';
 
 @Injectable()
 export class EmailService {
@@ -55,7 +56,11 @@ export class EmailService {
     const user = await this.userRepository.findOne({
       where: { email: loginDto.email.toLowerCase() },
     });
-
+    if (user.provider !== AuthProvider.EMAIL) {
+      throw new UnprocessableEntityException({
+        email: `User is registered with ${user.provider}`,
+      });
+    }
     if (!user) {
       throw new UnprocessableEntityException({ email: 'User not found' });
     }

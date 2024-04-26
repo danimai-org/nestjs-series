@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { AuthService } from '../auth/services/auth.service';
+import { AuthProvider } from '../auth/auth.provider';
 
 @Injectable()
 export class GoogleService {
@@ -44,6 +45,7 @@ export class GoogleService {
       first_name: given_name,
       last_name: family_name,
       is_active: true,
+      provider: AuthProvider.GOOGLE,
     });
     return this.handleRegisteredUser(user);
   }

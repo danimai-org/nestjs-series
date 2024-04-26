@@ -8,8 +8,9 @@ import { UserModule } from '../user/user.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { MailerConfigClass } from '../mail/mailerConfig.service';
 import { GoogleAuthModule } from '../auth-google/google.module';
+import { PostModule } from '../post/post.module';
 
-const modules = [AuthModule, UserModule, GoogleAuthModule];
+const modules = [AuthModule, UserModule, GoogleAuthModule, PostModule];
 
 export const global_modules = [
   ConfigModule.forRoot({

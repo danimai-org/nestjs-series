@@ -16,7 +16,9 @@ export class UserService {
   ) {}
 
   async create(
-    userCreateDto: RegisterDto | Pick<User, 'email_verified_at' | 'is_active'>,
+    userCreateDto:
+      | RegisterDto
+      | Pick<User, 'email_verified_at' | 'is_active' | 'provider'>,
   ) {
     const user = User.create({ ...userCreateDto });
     return this.userRepository.save(user);

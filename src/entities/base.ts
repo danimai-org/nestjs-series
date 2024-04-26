@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 export abstract class BaseEntity extends _BaseEntity {
-  @ApiProperty()
+  @ApiProperty({ format: 'uuid' })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

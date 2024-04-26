@@ -19,20 +19,18 @@ export class AuthService {
     const refreshTokenExpiresIn = this.configService.get(
       'auth.refreshTokenExpiresIn',
     );
-    const accessTokenExpiresIn = this.configService.get(
-      'auth.accessTokenExpiresIn',
-    );
     const session = await this.sessionService.create(user);
 
-    const payload = {
-      id: session.id,
-    };
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: accessTokenExpiresIn,
-    });
-    const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: refreshTokenExpiresIn,
-    });
+    const accessToken = await this.createAccessToken(session.id);
+    const refreshToken = this.jwtService.sign(
+      {
+        id: session.id,
+        type: 'REFRESH',
+      },
+      {
+        expiresIn: refreshTokenExpiresIn,
+      },
+    );
 
     return {
       accessToken,
@@ -47,14 +45,13 @@ export class AuthService {
 
     const payload = {
       id: sessionId,
+      type: 'ACCESS',
     };
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: accessTokenExpiresIn,
     });
 
-    return {
-      accessToken,
-    };
+    return accessToken;
   }
 
   async userRegisterEmail(
